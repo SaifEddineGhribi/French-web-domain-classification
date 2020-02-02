@@ -23,12 +23,18 @@ def get_train_data(G):
     # (1) out-degree of node
     # (2) in-degree of node
     # (3) average degree of neighborhood of node
-    X_train = np.zeros((len(train_hosts), 3))
+    X_train = np.zeros((len(train_hosts), 6))
     avg_neig_deg = nx.average_neighbor_degree(G, nodes=train_hosts)
+    centrality = nx.degree_centrality(G) 
+    hits = nx.hits(G)
+    pagerank = nx.pagerank(G)
     for i in range(len(train_hosts)):
         X_train[i,0] = G.in_degree(train_hosts[i])
         X_train[i,1] = G.out_degree(train_hosts[i])
         X_train[i,2] = avg_neig_deg[train_hosts[i]]
+        X_train[i,3] = centrality[train_hosts[i]]
+        X_train[i,4] = hits[0][train_hosts[i]] + hits[1][train_hosts[i]]
+        X_train[i,5] = pagerank[train_hosts[i]]
     return X_train,y_train 
 
 ############################################################################
@@ -37,17 +43,23 @@ def get_test_data(G):
     with open("test.csv", 'r') as f:
         test_hosts = f.read().splitlines()
     # Create the test matrix. Use the same 3 features as above
-    X_test = np.zeros((len(test_hosts), 3))
+    X_test = np.zeros((len(test_hosts), 6))
     avg_neig_deg = nx.average_neighbor_degree(G, nodes=test_hosts)
+    centrality = nx.degree_centrality(G) 
+    hits = nx.hits(G)
+    pagerank = nx.pagerank(G)
     for i in range(len(test_hosts)):
         X_test[i,0] = G.in_degree(test_hosts[i])
         X_test[i,1] = G.out_degree(test_hosts[i])
         X_test[i,2] = avg_neig_deg[test_hosts[i]]
+        X_test[i,3] = nx.degree_centrality(G)[test_hosts[i]]
+        X_test[i,4] = hits[1][test_hosts[i]]+hits[0][test_hosts[i]]
+        X_test[i,5] = pagerank[test_hosts[i]]
     return X_test
 
 ############################################################################
 
-def create_prediction(clf,y_pred): 
+def create_prediction(clf,y_pred    ): 
     #y_pred = clf.predict_proba(X_test)
     with open("test.csv", 'r') as f:
         test_hosts = f.read().splitlines()
