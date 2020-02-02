@@ -47,8 +47,8 @@ def get_test_data(G):
 
 ############################################################################
 
-def create_prediction(clf,X_test): 
-    y_pred = clf.predict_proba(X_test)
+def create_prediction(clf,y_pred): 
+    #y_pred = clf.predict_proba(X_test)
     with open("test.csv", 'r') as f:
         test_hosts = f.read().splitlines()
 
